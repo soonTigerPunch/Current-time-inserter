@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 import tkinter as tk
 from tkinter import messagebox, simpledialog,StringVar
+import json
 
 current_hotkey = 'ctrl+space'
 def insert_text(text: str):
@@ -43,13 +44,35 @@ def change_hotkey():
             hotkey_label.config(text="Current Hotkey: " + current_hotkey)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to set hotkey: {e}")
+    save_config()
+
+def save_config():
+    config = {
+        'hotkey': current_hotkey,
+        'format': { key: var.get() for key, var in format_vars.items() },
+        'separator': Separator_input.get()
+    }
+    with open('config.json', 'w') as f:
+        json.dump(config, f)
+def load_config():
+    global current_hotkey
+    try:
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+            current_hotkey = config.get('hotkey', current_hotkey)
+            for key, value in config.get('format', {}).items():
+                if key in format_vars:
+                    format_vars[key].set(value)
+            Separator_input.set(config.get('separator', Separator_input.get()))
+    except FileNotFoundError:
+        pass
         
 
 
 root = tk.Tk()
 
 format_vars = { 
-    'year': tk.BooleanVar(value=True),
+    'year': tk.BooleanVar(value=True,),
     'mon': tk.BooleanVar(value=True),
     'day': tk.BooleanVar(value=True),
     'hour': tk.BooleanVar(value=True),
@@ -58,6 +81,7 @@ format_vars = {
     'ms': tk.BooleanVar(value=True) }
 
 Separator_input=StringVar(value="/")
+load_config()
 tk.OptionMenu(root, Separator_input, "/", "-", ".", ":",).place(x=10, y=35)
 change_hotkey_button=tk.Button(root, text="Change Hotkey", command=lambda: change_hotkey())
 change_hotkey_button.place(x=170, y=248)
@@ -87,5 +111,5 @@ checkbox.place(x=250, y=10)
 
 keyboard.add_hotkey(current_hotkey, lambda: insert_time_text()) 
 
-
+root.protocol("WM_DELETE_WINDOW", lambda: (save_config(), root.destroy()))
 root.mainloop()
