@@ -88,7 +88,7 @@ def run_tray():
     )
     image = Image.open("clock.png")
     
-    icon = pystray.Icon("현재 시간 삽입기", image, "Time Inserter", menu)
+    icon = pystray.Icon("현재 시간 삽입기", image, "현재 시간 삽입기", menu)
     
     icon.run()
         
