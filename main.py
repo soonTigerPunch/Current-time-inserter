@@ -108,9 +108,9 @@ format_vars = {
 Separator_input=StringVar(value="/")
 load_config()
 tk.OptionMenu(root, Separator_input, "/", "-", ".", ":",).place(x=10, y=35)
-change_hotkey_button=tk.Button(root, text="핫키 변경", command=lambda: change_hotkey())
+change_hotkey_button=tk.Button(root, text="단축키 변경", command=lambda: change_hotkey())
 change_hotkey_button.place(x=170, y=248)
-hotkey_label=tk.Label(root, text="현재 핫키: " + current_hotkey)
+hotkey_label=tk.Label(root, text="현재 단축키: " + current_hotkey)
 hotkey_label.place(x=5, y=250)
 
 root.title("현재 시간 삽입기")
