@@ -6,8 +6,14 @@ import time
 import tkinter as tk
 from tkinter import messagebox, simpledialog,StringVar
 import json
+import pystray
+from pystray import MenuItem , Menu
+from PIL import Image, ImageDraw
+import threading
+
 
 current_hotkey = 'ctrl+space'
+
 def insert_text(text: str):
     old_clip=pyperclip.paste()
     pyperclip.copy(text)
@@ -35,15 +41,15 @@ def insert_time_text():
    insert_text(curr_time)
 def change_hotkey():
     global current_hotkey
-    new_hotkey = simpledialog.askstring("Change Hotkey", "Enter new hotkey (e.g., ctrl+shift+t):")
+    new_hotkey = simpledialog.askstring("핫키 바꾸기", "바꾸실 핫키를 입력하세요. (예: ctrl+shift+t):")
     if new_hotkey:
         try:
             keyboard.remove_hotkey(current_hotkey)
             keyboard.add_hotkey(new_hotkey, lambda: insert_time_text())
             current_hotkey = new_hotkey
-            hotkey_label.config(text="Current Hotkey: " + current_hotkey)
+            hotkey_label.config(text="현재 핫키: " + current_hotkey)
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to set hotkey: {e}")
+            messagebox.showerror("오류", f"핫키 설정 실패: {e}")
     save_config()
 
 def save_config():
@@ -66,6 +72,25 @@ def load_config():
             Separator_input.set(config.get('separator', Separator_input.get()))
     except FileNotFoundError:
         pass
+def run_tray():
+    
+    def show_window(icon, item):
+        root.deiconify()
+    
+    def on_quit(icon, item):
+        save_config()
+        icon.stop()
+        root.quit()
+    
+    menu = Menu(
+        MenuItem("종료", on_quit),
+        MenuItem("설정 열기", show_window)
+    )
+    image = Image.open("clock.png")
+    
+    icon = pystray.Icon("현재 시간 삽입기", image, "Time Inserter", menu)
+    
+    icon.run()
         
 
 
@@ -83,13 +108,12 @@ format_vars = {
 Separator_input=StringVar(value="/")
 load_config()
 tk.OptionMenu(root, Separator_input, "/", "-", ".", ":",).place(x=10, y=35)
-change_hotkey_button=tk.Button(root, text="Change Hotkey", command=lambda: change_hotkey())
+change_hotkey_button=tk.Button(root, text="핫키 변경", command=lambda: change_hotkey())
 change_hotkey_button.place(x=170, y=248)
-hotkey_label=tk.Label(root, text="Current Hotkey: " + current_hotkey)
+hotkey_label=tk.Label(root, text="현재 핫키: " + current_hotkey)
 hotkey_label.place(x=5, y=250)
 
-
-root.title("current time inserter")
+root.title("현재 시간 삽입기")
 root.geometry("350x275")
 root.resizable(False, False)
 checkbox=tk.Checkbutton(root, text="년", variable=format_vars['year'])
@@ -111,5 +135,11 @@ checkbox.place(x=250, y=10)
 
 keyboard.add_hotkey(current_hotkey, lambda: insert_time_text()) 
 
-root.protocol("WM_DELETE_WINDOW", lambda: (save_config(), root.destroy()))
+
+
+
+tray_thread = threading.Thread(target=run_tray, daemon=True)
+tray_thread.start()
+
+root.withdraw()
 root.mainloop()
