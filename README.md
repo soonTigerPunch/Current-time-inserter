@@ -1,7 +1,11 @@
-# Current-time-inserter
-Pressing a hotkey inserts the current time. 
-Data is saved when you change hotkeys and exit the program, and loaded when you start the program.
--You can output only the desired time range by checking/unchecking the checkbox.
--You can change the separator by clicking the button in the upper right corner.
--You can change the hotkey by pressing the "Change Hotkey" button at the bottom center.
-more Various settings are available in Settings.(WIP)
+# 현재 시간 삽입 프로그램
+단축키를 누르면 현재 시간이 삽입됩니다.
+단축키를 변경하고 프로그램을 종료하면 데이터가 저장되고, 프로그램을 다시 시작하면 불러와집니다.
+처음 프로그램을 실행하면 시스템 트레이로 백그라운드 실행됩니다.
+-체크박스를 선택/해제하여 원하는 시간 범위만 출력할 수 있습니다.
+
+-오른쪽 상단의 버튼을 클릭하여 구분선을 변경할 수 있습니다.
+
+-하단 중앙의 "단축키 변경" 버튼을 눌러 단축키를 변경할 수 있습니다.
+
+더 자세한 설정은 설정 메뉴에서 확인할 수 있습니다.(개발 중)
