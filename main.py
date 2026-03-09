@@ -72,12 +72,14 @@ def load_config():
             Separator_input.set(config.get('separator', Separator_input.get()))
     except FileNotFoundError:
         pass
+
+
 def run_tray():
     
-    def show_window(icon, item):
+    def show_window():
         root.deiconify()
     
-    def on_quit(icon, item):
+    def on_quit(icon):
         save_config()
         icon.stop()
         root.quit()
@@ -91,8 +93,10 @@ def run_tray():
     icon = pystray.Icon("현재 시간 삽입기", image, "현재 시간 삽입기", menu)
     
     icon.run()
-        
-
+def help():
+    messagebox.showinfo("사용법", "체크박스를 통해 원하는 시간 요소를 선택하고, 구분자를 설정한 후 단축키를 눌러 현재 시간을 삽입하세요.")
+def hide_window():
+    root.withdraw()
 
 root = tk.Tk()
 
@@ -131,7 +135,8 @@ checkbox.place(x=210, y=10)
 checkbox=tk.Checkbutton(root, text="밀리초", variable=format_vars['ms'])
 checkbox.place(x=250, y=10)
 
-
+help_button=tk.Button(root, text="사용법", command=lambda: help())
+help_button.place(x=250, y=248)
 
 keyboard.add_hotkey(current_hotkey, lambda: insert_time_text()) 
 
@@ -141,5 +146,13 @@ keyboard.add_hotkey(current_hotkey, lambda: insert_time_text())
 tray_thread = threading.Thread(target=run_tray, daemon=True)
 tray_thread.start()
 
-root.withdraw()
+try:
+    with open('config.json', 'r'):
+        pass  
+    root.withdraw() 
+except FileNotFoundError:
+    
+    root.deiconify()  
+    root.after(500, help)  
+root.protocol("WM_DELETE_WINDOW", hide_window)
 root.mainloop()
